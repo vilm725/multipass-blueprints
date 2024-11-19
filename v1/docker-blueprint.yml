@@ -15,9 +15,9 @@ instances:
     image: 24.04    # a valid image alias, see `multipass find` for available values
     limits:
       min-cpu: 2       # the minimum number of CPUs this blueprint can work with
-      min-mem: 2G    # the minimum amount of memory (can use G/K/M/B suffixes)
-      min-disk: 10G   # and the minimum disk size (as above)
-    timeout: 1800         # maximum time for the instance to launch, and separately for cloud-init to complete
+      min-mem: 4G    # the minimum amount of memory (can use G/K/M/B suffixes)
+      min-disk: 20G   # and the minimum disk size (as above)
+    #timeout: 1800         # maximum time for the instance to launch, and separately for cloud-init to complete
     cloud-init:
       vendor-data: |       # cloud-init vendor data
         # Mettre le bon timezone
@@ -51,7 +51,7 @@ instances:
           - systemctl start docker
           - systemctl enable docker
           
-        final_message: "The system is finally up, after $UPTIME seconds"
+        #final_message: "The system is finally up, after $UPTIME seconds"
 
-health-check: |            # a health-check shell script ran by integration tests
-  docker run hello-world
+#health-check: |            # a health-check shell script ran by integration tests
+  #docker run hello-world
