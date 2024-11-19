@@ -1,0 +1,59 @@
+description: Custom docker # * a short description of the blueprint ("tagline")
+version: latest          # * a version string
+
+# multipass launch customdocker
+# OU avec une config custom
+# multipass launch customdocker --name docker-dev --cpus 4 --memory 8G --disk 50G
+
+runs-on:                   # a list of architectures this blueprint can run on
+# - arm64                    #   see https://doc.qt.io/qt-5/qsysinfo.html#currentCpuArchitecture
+# - x86_64                   #   for a list of valid values
+- amd64
+
+instances:
+  customdocker:                  # * equal to the blueprint name
+    image: 24.04    # a valid image alias, see `multipass find` for available values
+    limits:
+      min-cpu: 1       # the minimum number of CPUs this blueprint can work with
+      min-mem: 1    # the minimum amount of memory (can use G/K/M/B suffixes)
+      min-disk: 5   # and the minimum disk size (as above)
+    timeout: 1800         # maximum time for the instance to launch, and separately for cloud-init to complete
+    cloud-init:
+      vendor-data: |       # cloud-init vendor data
+        # Mettre le bon timezone
+        timezone: Europe/Paris
+
+        # Créer un utilisateur (ubuntu)
+        users:
+        - name: ubuntu
+          gecos: Ubuntu User
+          shell: /bin/bash
+          home: /home/ubuntu
+          groups: users,admin,wheel,lxd,docker
+          sudo: ALL=(ALL) NOPASSWD:ALL
+
+        # Update et upgrade
+        # package_update: true
+        # package_upgrade: true
+
+        # Installation des packages nécessaire (uidmap pour docker rootless)
+        packages:
+          - apt-transport-https
+          - bash-completion
+          - ca-certificates
+          - curl
+          - git
+          - uidmap
+
+        runcmd:
+          - curl -fsSL https://get.docker.com -o get-docker.sh && sudo sh get-docker.sh
+          - curl -fsSL https://get.docker.com/rootless --force | sh
+          - systemctl start docker
+          - systemctl enable docker
+          # - docker run -d --name myflaskapp -p 8080:5005 soso725/flaskmaterialkitpublic:dev
+          - apt-get autoremove -y
+
+        final_message: "The system is finally up, after $UPTIME seconds"
+
+health-check: |            # a health-check shell script ran by integration tests
+  docker run hello-world
