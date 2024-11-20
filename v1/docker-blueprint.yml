@@ -13,8 +13,9 @@ instances:
     #timeout: 1800  
     cloud-init:
       vendor-data: |
-        
-        timezone: Europe/Paris
+
+        # launch failed: Cannot merge values of timezone:
+        # timezone: Europe/Paris
 
         users:
         - name: ubuntu
