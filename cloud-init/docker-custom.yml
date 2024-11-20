@@ -28,8 +28,6 @@ packages:
 runcmd:
   - curl -fsSL https://get.docker.com -o get-docker.sh && sudo sh get-docker.sh
   - curl -fsSL https://get.docker.com/rootless --force | sh
-  # - sudo systemctl enable docker.service
-  # - sudo systemctl enable containerd.service
   - systemctl start docker
   - systemctl enable docker
   - docker run -d --name mynginxserver -p 8080:80 nginx:alpine-slim
