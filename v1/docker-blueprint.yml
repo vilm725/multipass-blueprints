@@ -10,7 +10,7 @@ instances:
       min-cpu: 2    
       min-mem: 4G   
       min-disk: 20G 
-    #timeout: 1800  
+    timeout: 1800  
     cloud-init:
       vendor-data: |
 
