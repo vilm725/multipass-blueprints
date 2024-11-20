@@ -42,7 +42,7 @@ instances:
           - systemctl start docker
           - systemctl enable docker
         
-        final_message: "The system is finally up, after $UPTIME seconds"
+        #final_message: "The system is finally up, after $UPTIME seconds"
 
 health-chelmck: |
   docker version
