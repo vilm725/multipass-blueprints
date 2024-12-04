@@ -1,0 +1,63 @@
+#cloud-config
+
+# Mettre le bon timezone
+timezone: Europe/Paris
+
+# Créer un utilisateur (ubuntu)
+users:
+- name: ubuntu
+  gecos: Ubuntu User
+  shell: /bin/bash
+  home: /home/ubuntu
+  groups: users,admin,wheel,lxd,docker
+  sudo: ALL=(ALL) NOPASSWD:ALL
+
+# Update et upgrade
+package_update: true
+package_upgrade: true
+
+# Installation des packages nécessaire (uidmap pour docker rootless)
+packages:
+  - apt-transport-https
+  - bash-completion
+  - ca-certificates
+  - curl
+  - git
+  - uidmap
+
+runcmd:
+  # Connexion avec mdp via vscode
+  - sudo sed -i 's/no/Yes/g' /etc/ssh/sshd_config.d/60-cloudimg-settings.conf
+  - sudo service ssh restart
+  - echo 'ubuntu:soso' | chpasswd
+  # Installation de Docker
+  - curl -fsSL https://get.docker.com -o get-docker.sh && sudo sh get-docker.sh
+  - curl -fsSL https://get.docker.com/rootless --force | sh
+  - systemctl start docker
+  - systemctl enable docker
+  # Installation de minikube via le binaire
+  - curl -LO https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64 && sudo install minikube-linux-amd64 /usr/local/bin/minikube && rm minikube-linux-amd64
+  - systemctl start minikube
+  - systemctl enable minikube
+  # Démarrage du cluster
+  - sudo -u ubuntu minikube start --driver=docker --listen-address=0.0.0.0 --memory=max --cpus=max --kubernetes-version=v1.31.0
+  # Installation de la cli kubectl via snap (plus simple et rapide) car plus dispo via apt 
+  - snap install kubectl --classic
+
+# Installation de l'autocompletion
+write_files:
+- path: /home/ubuntu/.bashrc
+  defer: true
+  content: |
+    if command -v minikube &>/dev/null
+    then
+      eval "$(minikube completion bash)"
+    fi
+    source /etc/bash_completion
+    source <(minikube completion bash)
+    alias kubectl="minikube kubectl --"
+    alias k="minikube kubectl --"
+    alias k="kubectl"
+    complete -F __start_kubectl k
+    source <(kubectl completion bash)
+  permissions: '0755'
