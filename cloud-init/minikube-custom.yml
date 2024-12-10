@@ -39,10 +39,11 @@ runcmd:
   - curl -LO https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64 && sudo install minikube-linux-amd64 /usr/local/bin/minikube && rm minikube-linux-amd64
   - systemctl start minikube
   - systemctl enable minikube
-  # Démarrage du cluster
-  - sudo -u ubuntu minikube start --driver=docker --listen-address=0.0.0.0 --memory=max --cpus=max --kubernetes-version=v1.31.0
   # Installation de la cli kubectl via snap (plus simple et rapide) car plus dispo via apt 
   - snap install kubectl --classic
+  # Démarrage du cluster
+  - sudo -u ubuntu minikube start --driver=docker --listen-address=0.0.0.0 --memory=max --cpus=max --kubernetes-version=v1.31.0
+  - sudo systemctl enable minikube
 
 # Installation de l'autocompletion
 write_files:
@@ -60,4 +61,23 @@ write_files:
     alias k="kubectl"
     complete -F __start_kubectl k
     source <(kubectl completion bash)
+  permissions: '0755'
+- path: /etc/systemd/system/minikube.service
+  defer: true
+  content: |
+    [Unit]
+    Description=Kickoff Minikube Cluster
+    After=docker.service
+
+    [Service]
+    Type=oneshot
+    ExecStart=/usr/local/bin/minikube start --listen-address=0.0.0.0 --memory=max --cpus=max --kubernetes-version=v1.31.0
+    RemainAfterExit=true
+    ExecStop=/usr/local/bin/minikube stop
+    StandardOutput=journal
+    User=ubuntu
+    Group=ubuntu
+
+    [Install]
+    WantedBy=multi-user.target
   permissions: '0755'
