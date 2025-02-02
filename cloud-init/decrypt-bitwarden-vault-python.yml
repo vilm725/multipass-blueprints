@@ -7,7 +7,6 @@
 # Mettre le bon timezone
 timezone: Europe/Paris
 
-# Créer un utilisateur (ubuntu), avec un commentaire (champ gecos), un shell via bash, inclus dans des groupes et dispose d'un sudo sans mdp
 users:
 - name: ubuntu
   gecos: Ubuntu User
