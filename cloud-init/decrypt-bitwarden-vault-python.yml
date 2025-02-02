@@ -1,9 +1,7 @@
 #cloud-config
 
 # Permet de déchiffrer rapidement un export bitwarden .json chiffré avec mot de passe
-
 # multipass launch noble -n python-decrypt-bitwarden-vault --cpus 4 --memory 8G --cloud-init /home/soso/Desktop/bitwarden-multipass-fullauto/cloudinit-dechiffrement-export-bitwarden-python.yml
-
 # Mettre le bon timezone
 timezone: Europe/Paris
 
