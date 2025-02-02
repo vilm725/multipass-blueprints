@@ -1,9 +1,7 @@
 #cloud-config
-
 # Permet de déchiffrer rapidement un export bitwarden .json chiffré avec mot de passe
 # multipass launch noble -n python-decrypt-bitwarden-vault --cpus 4 --memory 8G --cloud-init /home/soso/Desktop/bitwarden-multipass-fullauto/cloudinit-dechiffrement-export-bitwarden-python.yml
 # Possibilité de monter le backup chiffré directement dans le home : multipass launch --mount /local/path:/instance/path
-
 # Mettre le bon timezone
 timezone: Europe/Paris
 
@@ -15,11 +13,9 @@ users:
   groups: users,admin,wheel,lxd,docker
   sudo: ALL=(ALL) NOPASSWD:ALL
 
-# Update et upgrade
 package_update: true
 package_upgrade: true
 
-# Installation des packages nécessaire (uidmap pour docker rootless)
 packages:
   - apt-transport-https
   - bash-completion
@@ -36,6 +32,7 @@ runcmd:
   - sudo service ssh restart
   - mkdir dechiffrement-bitwarden && git clone https://github.com/GurpreetKang/BitwardenDecrypt /home/ubuntu/dechiffrement-bitwarden
   - pip install -r /home/ubuntu/dechiffrement-bitwarden/requirements.txt --break-system-packages
+
   # Transférer son backup via scp, ou via vscodium avec un drag and drop ou via multipass transfert :
   # multipass transfer bitwarden_export_01-02-2025-20h25.json python-decrypt-bitwarden-vault:/home/ubuntu/
 
